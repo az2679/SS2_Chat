@@ -5,12 +5,14 @@ let infoTab, infoWindow, infoDis
 let infoToggle = true
 let infoIconArray, infoIcon, infoChatName, infoComArray, infoCom, infoChange, infoMemNum, infoLocShare, infoDivider, infoLocSend
 let infoMemberArray, infoMember, infoNameArray, infoName
-let friendInQ, mouseDrag, removeButton, leftBound, hideChat, infoWindowLine
-
-let infoDivider1
-
+let friendInQ, mouseDrag, removeButton, leftBound, infoWindowLine
 let removeToggle = false
 
+let hideChat, hideChatBlock, hideChatLine
+
+let chatElement, windowButtons, searchBar, messageBar
+
+let contextElement, sideIconArray, sideIcon, sideNameArray, sideName, sideDividerArray, sideDivider, chatIcon, chatTextArray, chatText
 
 
 function setup() {
@@ -177,8 +179,8 @@ function setup() {
   removeButton.textColor = 255
 
   hideChat = new chatWindow.Sprite()
-  hideChat.h = chat.h - chatName.h -2
-  hideChat.y = chat.y + chatName.h/2 
+  hideChat.h = chat.h/2
+  hideChat.y = chat.y + chatName.h
   hideChat.w = (infoWindow.x-infoWindow.w/2) - (sideBar.x+sideBar.w/2) 
   hideChat.x = (sideBar.x+sideBar.w/2) + hideChat.w/2
   hideChat.color = chat.color
@@ -206,10 +208,145 @@ function setup() {
   infoLocSend.w = infoWindow.w*0.4
   infoLocSend.x = infoChange.x - infoChange.w/2 + infoLocSend.w/2
 
+  //using parameters from draw to have tab semi pulled out in set up
   leftBound = (infoWindow.x - infoWindow.w/4) 
   friendInQ.x = leftBound + (friendInQ.w*0.1)
   infoMemberArray[3].x = ((leftBound - friendInQ.w/2) + infoMemberArray[3].d*1.3) + (friendInQ.w*0.1)
   infoNameArray[3].x = ((leftBound - friendInQ.w/2) + infoNameArray[3].w) + (friendInQ.w*0.1)
+
+  chatElement = new Group()
+    chatElement.collider='s'
+    chatElement.color = 245
+
+  windowButtons = new chatElement.Sprite()
+    //doesn't resize so hard code placement
+    windowButtons.w = 60
+    windowButtons.x = (sideBar.x - sideBar.w/2) + windowButtons.h
+    windowButtons.h = 25
+    windowButtons.y = (sideBar.y - sideBar.h/2) + windowButtons.h*1.2
+
+  searchBar = new chatElement.Sprite()
+    searchBar.w = sideBar.w - ((windowButtons.x-windowButtons.w/2)-(sideBar.x-sideBar.w/2))*2
+      //margin between buttons and edge of side bar. *2 for two margins
+    searchBar.x = sideBar.x
+    searchBar.h = textHeight
+    searchBar.y = (sideBar.y - sideBar.h/2) + searchBar.h/2 + windowButtons.h*2.5
+
+  contextElement = new Group()
+    contextElement.collider='s'
+    contextElement.color = 245
+
+  sideIconArray = []
+  while(sideIconArray.length < 8){
+    sideIcon = new contextElement.Sprite()
+    sideIconArray.push(sideIcon)
+    sideIcon.d = 45
+    sideIcon.y = (searchBar.y + searchBar.h/2) + (sideIcon.d * sideIconArray.length * 1.65) - sideIcon.r
+    sideIcon.x = searchBar.x - searchBar.w/2 + sideIcon.d
+    sideIcon.stroke = sideIcon.color
+  }
+
+  sideNameArray = []
+  while(sideNameArray.length < 8){
+    sideName = new contextElement.Sprite()
+    sideNameArray.push(sideName)
+    sideName.h = textHeight *0.75
+    sideName.w = 150
+    sideName.y = (searchBar.y + searchBar.h/2) + (sideName.h * (sideNameArray.length-1) * 3.3) + sideName.h*1.5
+    sideName.x = sideIcon.x + sideIcon.r + sideName.w/2 + 10
+    sideName.stroke = sideName.color
+  }
+
+  sideDividerArray = []
+  while(sideDividerArray.length < 7){
+    sideDivider = new contextElement.Sprite()
+    sideDividerArray.push(sideDivider)
+    sideDivider.h = 0
+    sideDivider.w = (searchBar.w) - ((sideName.x-sideName.w/2)-(searchBar.x-searchBar.w/2))
+    sideDivider.y = (searchBar.y + searchBar.h/2) + (sideName.h * (sideDividerArray.length) * 3.3) + sideName.h/2
+    sideDivider.x = sideIcon.x + sideIcon.r + sideDivider.w/2 + 10
+    sideDivider.stroke = 250
+  }
+
+  sideTextArray = []
+  while(sideTextArray.length < 7){
+    sideText = new contextElement.Sprite()
+    sideTextArray.push(sideText)
+    sideText.h = textHeight*0.75
+    sideText.w = sideDivider.w
+    sideText.y = ((searchBar.y + searchBar.h/2) + sideName.h*2) +(sideText.h * (sideTextArray.length-1) * 3.3) + sideText.h/2
+    sideText.x = sideIcon.x + sideIcon.r + sideText.w/2 + 10
+    sideText.color = 230
+    sideText.stroke = sideText.color
+  }
+  sideTextArray1 = []
+  while(sideTextArray1.length < 7){
+    sideText1 = new contextElement.Sprite()
+    sideTextArray1.push(sideText1)
+    sideText1.h = textHeight*0.75
+    sideText1.w = sideDivider.w
+    sideText1.y = ((searchBar.y + searchBar.h/2) + sideName.h*2) +(sideText1.h * (sideTextArray1.length-1) * 3.3) + sideText1.h/2 + sideText.h -5
+    sideText1.x = sideIcon.x + sideIcon.r + sideText1.w/2 + 10
+    sideText1.color = 230
+    sideText1.stroke = sideText1.color
+  }
+
+  sideTextArray[0].text = 'There is a friend group of 5 people.          '
+  sideTextArray[1].text ='However, one of the friends has been the'
+  sideTextArray1[1].text ='the target of rumors going around,           '
+  sideTextArray[2].text ='leading to distrust and tension/conflicts    '
+  sideTextArray1[2].text = 'within the friend group.                             '
+  sideTextArray[4].text = 'The friends turn to the unspoken leader    '
+  sideTextArray1[4].text = 'of their group for a solution.                      '
+
+  hideChatBlock = new chatElement.Sprite()
+  hideChatBlock.x = sideIconArray[7].x
+  hideChatBlock.w = sideIconArray[7].d
+  hideChatBlock.h = sideIconArray[7].r
+  hideChatBlock.y = sideBar.y+sideBar.h/2 + hideChatBlock.h/2
+  hideChatBlock.color = 220
+  hideChatBlock.stroke = hideChatBlock.color
+  //background color
+  hideChatLine = new chatElement.Sprite()
+  hideChatLine.x = sideBar.x
+  hideChatLine.w = sideBar.w
+  hideChatLine.h = 0
+  hideChatLine.y = sideBar.y+sideBar.h/2 -1
+  hideChatLine.stroke = 0
+
+  let chatMessageX = (chat.x-chat.w/2) + (sideBar.w) 
+
+  messageBar = new chatElement.Sprite()
+  messageBar.h = textHeight
+  messageBar.y = chat.y + chat.h/2 - messageBar.h*1.5
+  messageBar.w = (chat.w - sideBar.w) * 0.9
+  messageBar.x = chatMessageX + messageBar.w/2 + ((chat.w - sideBar.w)*0.05)
+  messageBar.color = 0
+  messageBar.layer=3
+
+
+  chatIcon = new contextElement.Sprite()
+  chatIcon.d = 40
+  chatIcon.y = messageBar.y - messageBar.h/2 - chatIcon.d*1.2
+  chatIcon.x = messageBar.x - messageBar.w/2 + chatIcon.r
+
+  chatTextArray = []
+  while(chatTextArray.length < 3){
+    chatText = new contextElement.Sprite()
+    chatTextArray.push(chatText)
+    chatText.h = textHeight*0.75
+    chatText.w = chatName.w*0.5
+    chatText.y = (messageBar.y) - (chatText.h * chatTextArray.length * 1.2) - messageBar.h
+    chatText.x = (chatName.x-chatName.w/2) + chatText.w*0.78
+    chatText.color = 200
+    chatText.stroke = chatText.color
+    chatText.textColor=0
+  }
+
+  chatTextArray[2].text = 'Despite lack of verification of the rumors,                       '
+  chatTextArray[1].text = 'should the friend group exclude the friend in question   '
+  chatTextArray[0].text = ' from the group to improve their overall harmony?           '
+
 
 }
 
@@ -246,8 +383,8 @@ function draw() {
     }
     if (friendInQ.x <= leftBound){
       friendInQ.x = leftBound 
-      infoMemberArray[3].x = (leftBound - friendInQ.w/2) + infoMemberArray[3].d*1.3
-      infoNameArray[3].x = (leftBound - friendInQ.w/2) + infoNameArray[3].w
+      infoMemberArray[3].x = ((leftBound - friendInQ.w/2) + infoMemberArray[3].d*1.3)
+      infoNameArray[3].x = ((leftBound - friendInQ.w/2) + infoNameArray[3].w)
     }
   }
 }
