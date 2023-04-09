@@ -130,7 +130,7 @@ function setup() {
     infoMember.x = infoChange.x - infoChange.w/2 + infoMember.r
     infoMember.stroke = infoMember.color
   }
-  infoMemberArray[3].color = 20
+  // infoMemberArray[3].color = 20
 
   infoNameArray = []
   while(infoNameArray.length < 5){
@@ -321,7 +321,7 @@ function setup() {
   messageBar.y = chat.y + chat.h/2 - messageBar.h*1.5
   messageBar.w = (chat.w - sideBar.w) * 0.9
   messageBar.x = chatMessageX + messageBar.w/2 + ((chat.w - sideBar.w)*0.05)
-  messageBar.color = 0
+  messageBar.color = 240
   messageBar.layer=3
 
 
@@ -346,6 +346,18 @@ function setup() {
   chatTextArray[2].text = 'Despite lack of verification of the rumors,                       '
   chatTextArray[1].text = 'should the friend group exclude the friend in question   '
   chatTextArray[0].text = ' from the group to improve their overall harmony?           '
+  // chatTextArray[4].w = chatName.w*0.2
+    //looks like problem with condensing group inside array is inability to edit features like w. cant cross ref. if outside loop, cant ref group features. but if inside loop, cant access individual items in array 
+    //   // chatMessageName.x = chatTextArray[4].x this doesnt work either 
+  
+  let chatMessageName = new contextElement.Sprite()
+    chatMessageName.h = textHeight*0.75
+    chatMessageName.y = (messageBar.y) - (chatText.h * 4 * 1.2) - messageBar.h
+    chatMessageName.w = chatName.w*0.15
+    chatMessageName.x = (chatName.x-chatName.w/2) + chatMessageName.w *1.43
+    chatMessageName.color = 230
+    chatMessageName.stroke = chatMessageName.color
+
 
 
 }
