@@ -3,9 +3,13 @@ let chatWindow, chat, sideBar, chatName, infoButton
 
 let infoTab, infoWindow, infoDis
 let infoToggle = true
-let infoIconArray, infoIcon, infoChatName, infoComArray, infoCom, infoChange, infoMemNum, infoLoc
+let infoIconArray, infoIcon, infoChatName, infoComArray, infoCom, infoChange, infoMemNum, infoLocShare, infoDivider, infoLocSend
 let infoMemberArray, infoMember, infoNameArray, infoName
 let friendInQ, mouseDrag, removeButton, leftBound, hideChat, infoWindowLine
+
+let infoDivider1
+
+let removeToggle = false
 
 
 
@@ -143,12 +147,12 @@ function setup() {
   infoNameArray[3].text = 'Friend in Question             '
   infoNameArray[4].text = 'Add Member                      '
 
-  infoLoc = new infoTab.Sprite()
-  infoLoc.h = textHeight *0.6
-  // infoLoc.y = infoWindow.y + infoWindow.h/2 - infoLoc.h*1.5
-    infoLoc.y = infoMemNum.y + (infoMemNum.h/2) + (infoMember.d * (infoMemberArray.length+1)) + infoLoc.h*1.5
-  infoLoc.w = infoWindow.w*0.4
-  infoLoc.x = infoChange.x - infoChange.w/2 + infoLoc.w/2
+  infoLocShare = new infoTab.Sprite()
+  infoLocShare.h = textHeight*0.75
+  // infoLocShare.y = infoWindow.y + infoWindow.h/2 - infoLocShare.h*1.5
+  infoLocShare.y = infoMemNum.y + (infoMemNum.h/2) + (infoMember.d * (infoMemberArray.length+1)) + infoLocShare.h*1.25
+  infoLocShare.w = infoWindow.w*0.5
+  infoLocShare.x = infoChange.x - infoChange.w/2 + infoLocShare.w/2
 
   friendInQ = new infoTab.Sprite()
   friendInQ.x = infoWindow.x
@@ -188,9 +192,28 @@ function setup() {
   infoWindowLine.y = infoWindow.y
   infoWindowLine.stroke = 0
 
+  infoDivider = new infoTab.Sprite()
+  infoDivider.w = infoWindow.w - (2*((infoLocShare.x-infoLocShare.w/2) - (infoWindow.x-infoWindow.w/2)))
+    //taking margin between location text and window edge (multiply by 2 since 2 margins)
+  infoDivider.h = 0
+  infoDivider.x = (infoLocShare.x-infoLocShare.w/2) + infoDivider.w/2
+  infoDivider.y = infoLocShare.y + infoLocShare.h/2 + textHeight/2
+  infoDivider.stroke = 0
 
+  infoLocSend = new infoTab.Sprite()
+  infoLocSend.h = textHeight * 0.75
+  infoLocSend.y = infoDivider.y + textHeight/2 + infoLocSend.h/2
+  infoLocSend.w = infoWindow.w*0.4
+  infoLocSend.x = infoChange.x - infoChange.w/2 + infoLocSend.w/2
+
+  leftBound = (infoWindow.x - infoWindow.w/4) 
+  friendInQ.x = leftBound + (friendInQ.w*0.1)
+  infoMemberArray[3].x = ((leftBound - friendInQ.w/2) + infoMemberArray[3].d*1.3) + (friendInQ.w*0.1)
+  infoNameArray[3].x = ((leftBound - friendInQ.w/2) + infoNameArray[3].w) + (friendInQ.w*0.1)
 
 }
+
+
 
 function draw() {
   background(220);
@@ -202,35 +225,56 @@ function draw() {
     infoTab.visible = false
   } 
 
-
-
   infoDis = dist(mouseX, mouseY, infoButton.x, infoButton.y)
   mouseDrag = pmouseX - mouseX
+  
 
-  leftBound = (infoWindow.x - infoWindow.w/4) 
-
+  if(!removeToggle){
   if (mouseIsPressed === true){
     if (mouseX > (friendInQ.x-friendInQ.w/2) && mouseX < (friendInQ.x+friendInQ.w/2) && mouseY > (friendInQ.y-friendInQ.h/2) && mouseY < (friendInQ.y+friendInQ.h/2)){
       // friendInQ.x = mouseX
       friendInQ.x = friendInQ.x - mouseDrag
       //trying to move by changes in mouseX. less jarring, more drag
-
-      infoNameArray[3].x = infoNameArray[3].x - mouseDrag
       infoMemberArray[3].x = infoMemberArray[3].x - mouseDrag
-
+      infoNameArray[3].x = infoNameArray[3].x - mouseDrag
     }
 
-    if(friendInQ.x >= infoWindow.x){
+    if(friendInQ.x >= infoWindow.x-10){
       friendInQ.x = infoWindow.x
-      infoNameArray[3].x = infoMember.x + infoMember.r + infoName.w/2 + 10
       infoMemberArray[3].x = infoChange.x - infoChange.w/2 + infoMember.r
+      infoNameArray[3].x = infoMember.x + infoMember.r + infoName.w/2 + 10
     }
     if (friendInQ.x <= leftBound){
       friendInQ.x = leftBound 
-      infoNameArray[3].x = (leftBound - friendInQ.w/2) + infoNameArray[3].w
       infoMemberArray[3].x = (leftBound - friendInQ.w/2) + infoMemberArray[3].d*1.3
+      infoNameArray[3].x = (leftBound - friendInQ.w/2) + infoNameArray[3].w
     }
   }
+}
+
+  if (removeToggle){
+    friendInQ.visible = false
+    removeButton.visible = false
+    infoMemberArray[3].visible = false
+    infoNameArray[3].visible = false
+
+    infoMemberArray[4].y = infoMemberArray[3].y 
+    infoNameArray[4].y = infoNameArray[3].y
+    //moves up one in array
+
+    infoLocShare.y = infoMemNum.y + (infoMemNum.h/2) + (infoMember.d * (infoMemberArray.length)) + infoLocShare.h*1.25
+      //same as original, just changed array.length
+
+    infoDivider.y = infoLocShare.y + infoLocShare.h/2 + 10
+    // infoLocSend.visible = true
+    infoLocSend.y = infoDivider.y + 10 + infoLocSend.h/2
+  } else{ infoLocSend.visible = false}
+
+
+
+
+
+
 }
 
 function mousePressed(){
@@ -238,5 +282,8 @@ function mousePressed(){
     infoToggle = !infoToggle
   }
 
+  if (friendInQ.x<=leftBound && mouseX>(removeButton.x) && mouseX<(removeButton.x+removeButton.w/2) && mouseY>(removeButton.y-removeButton.h/2) && mouseY<(removeButton.y+removeButton.h/2)){
+    removeToggle = !removeToggle
+  }
 
 }
